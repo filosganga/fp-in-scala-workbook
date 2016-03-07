@@ -19,6 +19,26 @@ class ListSpec extends UnitSpec {
 
       append(xs, 3) should be(reverse(prepend(reverse(xs), 3)))
     }
+
+    "be able to replace head item" in forAll(){
+      (xs: List[Int], x: Int) =>
+        whenever(List.size(xs) > 0) {
+          head(setHead(xs, x)) shouldBe Some(x)
+        }
+    }
+
+    "be able to drop items" in forAll(){
+      (xs: List[Int], n: Int) =>
+        whenever(n >= 0) {
+          val dropped = drop(xs, n)
+
+          if(List.size(xs) <= n) {
+            List.size(dropped) shouldBe 0
+          } else {
+            List.size(dropped) shouldBe List.size(xs) - n
+          }
+        }
+    }
   }
 
   implicit def listArb[T](implicit arbT: Arbitrary[T]): Arbitrary[List[T]] =

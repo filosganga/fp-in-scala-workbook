@@ -4,11 +4,11 @@ import scala.annotation.tailrec
 
 sealed trait List[+A]
 
-case class Cons[+A](head: A, tail: List[A]) extends List[A]
-
-case object Nil extends List[Nothing]
-
 object List {
+
+  case class Cons[+A](head: A, tail: List[A]) extends List[A]
+
+  case object Nil extends List[Nothing]
 
   def empty[T]: List[T] = nil
 
@@ -23,10 +23,20 @@ object List {
     case Cons(h, _) => Some(h)
   }
 
-  def tail[T](xs: List[T]): List[T] = xs match {
+  def tail[T](xs: List[T]): List[T] =
+    drop(xs, 1)
+
+  /** Ex 3.3 */
+  def setHead[T, T1 >: T](xs: List[T], x: T1): List[T1] =
+    prepend(tail(xs), x)
+
+  /** Ex 3.4 */
+  def drop[A](xs: List[A], n: Int): List[A] = xs match {
     case Nil => Nil
-    case Cons(_, tail) => tail
+    case l if n <= 0 => l
+    case Cons(h, tail) if n > 0 => tail
   }
+
 
   def append[T, T1 >: T](xs: List[T], x: T1): List[T1] =
     reverse(prepend(reverse(xs), x))
