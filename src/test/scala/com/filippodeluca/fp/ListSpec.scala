@@ -1,6 +1,7 @@
 package com.filippodeluca.fp
 
 import org.scalacheck.{Arbitrary, Gen}
+import org.scalatest.enablers.Sequencing
 
 class ListSpec extends UnitSpec {
 
@@ -128,6 +129,26 @@ class ListSpec extends UnitSpec {
       "return the lists element in order" in {
           flatten(List(List(1,2,3), List(4,5))) should be(List(1,2,3, 4, 5))
       }
+    }
+  }
+
+  "increment" when {
+    "the list is empty" should {
+      "return empty" in {
+        increment(nil[Int]) should be (nil[Int])
+      }
+    }
+
+    "the list is not empty" should {
+      "return a list with elements increased by one" in {
+          increment(List(1,2,3)) should be(List(2,3,4))
+      }
+    }
+  }
+
+  "filters" should {
+    "remove the elemnets that does not satisfy the predicate" in {
+      filter(List(1,2,3,4,5))(_ % 2 == 0) should be(List(2, 4))
     }
   }
 

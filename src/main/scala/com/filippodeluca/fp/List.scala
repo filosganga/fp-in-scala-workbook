@@ -96,6 +96,25 @@ object List {
     })
   }
 
+  def increment[A](xs: List[A])(implicit n: Numeric[A]) = {
+    map(xs){n.plus(_, n.one)}
+  }
+
+  def map[A, B](xs: List[A])(f: A => B): List[B] = {
+    reverse(foldLeft(xs, List.nil[B]){ (acc, x) =>
+      prepend(acc, f(x))
+    })
+  }
+
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = {
+    reverse(foldLeft(as, List.nil[A]){(acc, a) =>
+      if(f(a))
+        prepend(acc, a)
+      else
+        acc
+    })
+  }
+
 }
 
 
