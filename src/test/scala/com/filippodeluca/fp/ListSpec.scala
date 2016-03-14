@@ -26,18 +26,87 @@ class ListSpec extends UnitSpec {
           head(setHead(xs, x)) shouldBe Some(x)
         }
     }
+  }
 
-    "be able to drop items" in forAll(){
-      (xs: List[Int], n: Int) =>
-        whenever(n >= 0) {
-          val dropped = drop(xs, n)
+  "drop" when {
+    "the list is empty" should {
+      "return Nil" in forAll(){
+        n: Int =>
+        drop(List.empty, n) should be (List.empty)
+      }
+    }
 
-          if(List.size(xs) <= n) {
-            List.size(dropped) shouldBe 0
-          } else {
-            List.size(dropped) shouldBe List.size(xs) - n
+    "the list size is <= n" should {
+      "return Nil" in forAll(){
+        (xs: List[Int], n: Int) =>
+          whenever(List.size(xs) <= n) {
+            drop(xs, n) should be(List.empty)
           }
-        }
+      }
+    }
+  }
+
+  "dropWhile" when {
+    "the list is Nil" should {
+      "return Nil" in {
+        dropWhile(List.empty[Int])(_ => true) shouldBe List.empty[Int]
+      }
+    }
+
+    "the list is not empty" should {
+      "return the element of the list that match the predicate" in {
+        val xs: List[Int] = cons(1, cons(2, cons(3, cons(4, cons(1, nil)))))
+        dropWhile(xs)(_ <= 3) shouldBe cons(4, cons(1, nil))
+      }
+
+      "return the list when the first element does not match the predicate" in {
+        val xs: List[Int] = cons(5, cons(2, cons(3, cons(4, cons(1, nil)))))
+        dropWhile(xs)(_ <= 3) shouldBe xs
+      }
+    }
+  }
+
+  "init" when {
+    "the list is empty" should {
+      "return empty" in {
+        init(nil) shouldBe nil
+      }
+    }
+    "the list has one element" should {
+      "return empty" in {
+        init(cons(1, nil)) shouldBe nil
+      }
+    }
+    "the list has more then one element" should {
+      "return all element but last" in {
+        init(List(1,2,3,4)) shouldBe List(1,2,3)
+      }
+    }
+  }
+
+  "foldRight" when {
+    "the list is empty" should {
+      "return the zero" in forAll(){
+        zero: Int =>
+          foldRight(nil[Int], zero){ (x, sum) =>
+            x + sum
+          } should be(zero)
+      }
+    }
+
+    "the list is not empty" should {
+      "aggregate from right to left" in {
+        foldRight(List(1,2,3), 0){ (x, acc) =>
+          x
+        } should be(1)
+      }
+
+      "duplicate the list when nil and cons are passed" in forAll(){
+        l: List[Int] =>
+
+        foldRight(l, nil[Int])(cons(_, _)) should be (l)
+
+      }
     }
   }
 
