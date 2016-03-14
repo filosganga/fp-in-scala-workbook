@@ -45,6 +45,7 @@ object List {
     prepend(tail(xs), x)
 
   /** Ex 3.4 */
+  @tailrec
   def drop[A](xs: List[A], n: Int): List[A] = xs match {
     case Nil => Nil
     case l if n <= 0 => l
@@ -52,6 +53,7 @@ object List {
   }
 
   /** Ex 3.5 */
+  @tailrec
   def dropWhile[A](xs: List[A])(f: A => Boolean): List[A] = head(xs) match {
     case Some(x) if f(x) => dropWhile(tail(xs))(f)
     case _ => xs
@@ -90,29 +92,40 @@ object List {
   def foldRight[A, B](xs: List[A], zero: B)(f: (A, B) => B): B =
     foldLeft(reverse(xs), zero) { (b,a) => f(a,b)}
 
-  def flatten[A](xss: List[List[A]]): List[A] = {
+  def flatten[A](xss: List[List[A]]): List[A] =
     reverse(foldLeft(xss, List.nil[A]){ (acc, xs) =>
       foldLeft(xs, acc)(prepend(_, _))
     })
-  }
 
-  def increment[A](xs: List[A])(implicit n: Numeric[A]) = {
+  def increment[A](xs: List[A])(implicit n: Numeric[A]) =
     map(xs){n.plus(_, n.one)}
-  }
 
-  def map[A, B](xs: List[A])(f: A => B): List[B] = {
+  def map[A, B](xs: List[A])(f: A => B): List[B] =
     reverse(foldLeft(xs, List.nil[B]){ (acc, x) =>
       prepend(acc, f(x))
     })
-  }
 
-  def filter[A](as: List[A])(f: A => Boolean): List[A] = {
-    reverse(foldLeft(as, List.nil[A]){(acc, a) =>
-      if(f(a))
-        prepend(acc, a)
-      else
-        acc
-    })
+  def filter[A](as: List[A])(f: A => Boolean): List[A] =
+    flatMap(as){
+      case a if f(a) => List(a)
+      case _ => nil
+    }
+
+  def flatMap[A,B](as: List[A])(f: A => List[B]): List[B] =
+    flatten(map(as)(f))
+
+  def zip[A, B](as: List[A], bs: List[B]): List[(A, B)] =
+    zipWith(as, bs)(_ -> _)
+
+  def zipWith[A, B, C](as: List[A], bs: List[B])(combine: (A, B) => C): List[C] = {
+
+    @tailrec
+    def loop(al: List[A], bl: List[B], acc: List[C]): List[C] = al->bl match {
+      case (Cons(aHead, aTail), Cons(bHead, bTail)) => loop(aTail, bTail, prepend(acc, combine(aHead, bHead)))
+      case _ => acc
+    }
+
+    reverse(loop(as, bs, List.nil[C]))
   }
 
 }

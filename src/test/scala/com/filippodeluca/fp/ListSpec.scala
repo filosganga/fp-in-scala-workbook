@@ -152,6 +152,30 @@ class ListSpec extends UnitSpec {
     }
   }
 
+  "zipWith" when {
+    "one of the first list is empty" should {
+      "return empty" in {
+        zip(nil[Int], List(1,2,3)) should be (nil)
+        zip(List(1,2,3), nil[Int]) should be (nil)
+        zip(nil[Int], nil[Int]) should be (nil)
+      }
+    }
+
+    "one of the list is shorter" should {
+      "return a list whit size equal to the shorter one" in forAll(){
+        (as: List[Int], bs: List[Int]) =>
+          List.size(zip(as, bs)) should be(math.min(List.size(as), List.size(bs)))
+      }
+    }
+
+    "no list is empty" should {
+      "return a list with element combined" in {
+        zipWith(List('a','b'), List(1,2)){(a,b) => s"$a$b"} should be (List("a1", "b2"))
+      }
+    }
+
+  }
+
   implicit def listArb[T](implicit arbT: Arbitrary[T]): Arbitrary[List[T]] =
     Arbitrary(listGen[T](arbT.arbitrary))
 
