@@ -32,7 +32,7 @@ class ListSpec extends UnitSpec {
     "the list is empty" should {
       "return Nil" in forAll(){
         n: Int =>
-        drop(List.empty, n) should be (List.empty)
+        drop(List.nil, n) should be (List.nil)
       }
     }
 
@@ -40,7 +40,7 @@ class ListSpec extends UnitSpec {
       "return Nil" in forAll(){
         (xs: List[Int], n: Int) =>
           whenever(List.size(xs) <= n) {
-            drop(xs, n) should be(List.empty)
+            drop(xs, n) should be(List.nil)
           }
       }
     }
@@ -49,7 +49,7 @@ class ListSpec extends UnitSpec {
   "dropWhile" when {
     "the list is Nil" should {
       "return Nil" in {
-        dropWhile(List.empty[Int])(_ => true) shouldBe List.empty[Int]
+        dropWhile(List.nil[Int])(_ => true) shouldBe List.nil[Int]
       }
     }
 

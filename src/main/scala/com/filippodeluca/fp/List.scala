@@ -10,8 +10,6 @@ object List {
 
   case object Nil extends List[Nothing]
 
-  def empty[T]: List[T] = nil
-
   def nil[T]: List[T] = Nil
 
   def cons[T](h: T, tail: => List[T] = Nil): List[T] = {
@@ -19,7 +17,7 @@ object List {
   }
 
   def apply[T](xs: T*): List[T] = {
-    reverse(xs.foldLeft(empty[T]){(acc, x) =>
+    reverse(xs.foldLeft(nil[T]){(acc, x) =>
       cons(x, acc)
     })
   }
@@ -35,7 +33,7 @@ object List {
     * Return all element od the list but not the last
     */
   def init[A](xs: List[A]): List[A] =
-    reverse(tail(fold(xs)(empty[A]) { (acc, x) =>
+    reverse(tail(foldLeft(xs, nil[A]) { (acc, x) =>
       prepend(acc, x)
     }))
 
@@ -70,40 +68,28 @@ object List {
   def prepend[T, T1 >: T](xs: List[T], x: T1): List[T1] =
     cons(x, xs)
 
-  def size(xs: List[_]) = fold(xs)(0) { (acc, x) =>
+  def size(xs: List[_]) = foldLeft(xs, 0) { (acc, x) =>
     acc + 1
   }
 
-  def reverse[A](xs: List[A]): List[A] = fold(xs)(empty[A]) { (acc, x) =>
+  def reverse[A](xs: List[A]): List[A] = foldLeft(xs, nil[A]) { (acc, x) =>
     prepend(acc, x)
   }
 
   def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B = {
-
-    loop(as, z)
 
     @tailrec
     def loop(l: List[A], acc: B): B = l match {
       case Nil => acc
       case Cons(h, tail) => loop(tail, f(acc, h))
     }
+
+    loop(as, z)
   }
 
-  def foldRight[A, B](xs: List[A], zero: B)(f: (A, B) => B): B = xs match {
-    case Nil => zero
-    case Cons(h, tail) => f(h, foldRight(tail, zero)(f))
-  }
-
-  def fold[A, B](xs: List[A])(zero: B)(f: (B, A) => B): B = {
-
-    @tailrec
-    def loop(list: List[A], acc: B): B = list match {
-      case Cons(h, tail) => loop(tail, f(acc, h))
-      case Nil => acc
-    }
-
-    loop(xs, zero)
-  }
+  def foldRight[A, B](xs: List[A], zero: B)(f: (A, B) => B): B =
+    foldLeft(reverse(xs), zero) { (b,a) => f(a,b)}
+  
 
 }
 

@@ -13,7 +13,7 @@ sealed trait Stream[+A] {
   }
 
   def toList: List[A] = this match {
-    case Empty => List.empty
+    case Empty => List.nil
     case Cons(h, t) => List.cons(h(), t().toList)
   }
 
