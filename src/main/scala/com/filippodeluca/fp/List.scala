@@ -89,7 +89,12 @@ object List {
 
   def foldRight[A, B](xs: List[A], zero: B)(f: (A, B) => B): B =
     foldLeft(reverse(xs), zero) { (b,a) => f(a,b)}
-  
+
+  def flatten[A](xss: List[List[A]]): List[A] = {
+    reverse(foldLeft(xss, List.nil[A]){ (acc, xs) =>
+      foldLeft(xs, acc)(prepend(_, _))
+    })
+  }
 
 }
 

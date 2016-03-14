@@ -110,6 +110,27 @@ class ListSpec extends UnitSpec {
     }
   }
 
+  "flatten" when {
+    "the list is empty" should {
+      "return empty" in {
+        flatten(nil) should be(nil)
+      }
+    }
+
+    "the list contains only one list" should {
+      "return the head" in forAll() {
+        xs: List[Int] =>
+          flatten(List(xs)) should be(xs)
+      }
+    }
+
+    "the list contains only multiple lists" should {
+      "return the lists element in order" in {
+          flatten(List(List(1,2,3), List(4,5))) should be(List(1,2,3, 4, 5))
+      }
+    }
+  }
+
   implicit def listArb[T](implicit arbT: Arbitrary[T]): Arbitrary[List[T]] =
     Arbitrary(listGen[T](arbT.arbitrary))
 
