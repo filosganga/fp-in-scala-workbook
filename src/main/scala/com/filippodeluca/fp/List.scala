@@ -128,6 +128,17 @@ object List {
     reverse(loop(as, bs, List.nil[C]))
   }
 
+  def hasSubsequence[A](xs: List[A], zs: List[A]): Boolean = {
+
+    def loop(xs: List[A]): Boolean = xs match {
+      case Cons(h, tail) if zipWith(xs, zs)(_ == _) == map(zs)(_ => true) => true
+      case Cons(h, tail) => loop(tail)
+      case Nil => false
+    }
+
+    loop(xs)
+  }
+
 }
 
 

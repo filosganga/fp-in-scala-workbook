@@ -176,6 +176,32 @@ class ListSpec extends UnitSpec {
 
   }
 
+  "hasSubsequence" when {
+    "the list is empty" should {
+      "return false" in {
+        hasSubsequence(nil, List(1,2,3)) shouldBe false
+      }
+    }
+
+    "the sub-sequence is empty" should {
+      "return true" in {
+        hasSubsequence(List(1,2,3), nil) shouldBe true
+      }
+    }
+
+    "the list contains the sub-sequence" should {
+      "return true" in {
+        hasSubsequence(List(1, 2, 3, 4), List(2, 3)) shouldBe true
+      }
+    }
+
+    "the list does not contains the sub-sequence" should {
+      "return false" in {
+        hasSubsequence(List(1, 2, 3, 4), List(2, 4)) shouldBe false
+      }
+    }
+  }
+
   implicit def listArb[T](implicit arbT: Arbitrary[T]): Arbitrary[List[T]] =
     Arbitrary(listGen[T](arbT.arbitrary))
 
