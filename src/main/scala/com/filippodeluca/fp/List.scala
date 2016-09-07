@@ -70,6 +70,11 @@ object List {
   def prepend[T, T1 >: T](xs: List[T], x: T1): List[T1] =
     cons(x, xs)
 
+  def prepend[T, T1 >: T](xs: List[T], ys: List[T1]): List[T1] = ys match {
+    case Nil => xs
+    case Cons(h, t) => prepend(prepend(xs, h), t)
+  }
+
   def size(xs: List[_]) = foldLeft(xs, 0) { (acc, x) =>
     acc + 1
   }
