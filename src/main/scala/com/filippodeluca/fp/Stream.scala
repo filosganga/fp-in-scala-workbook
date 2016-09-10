@@ -6,7 +6,8 @@ sealed trait Stream[+A] {
 
   import Stream._
 
-  def head: A = headOption.getOrElse(throw new NoSuchElementException("the stream is empty"))
+  def head: A =
+    headOption.getOrElse(throw new NoSuchElementException("the stream is empty"))
 
   def headOption: Option[A] = this match {
     case Empty => None
@@ -15,7 +16,7 @@ sealed trait Stream[+A] {
 
   def tail: Stream[A] = this match {
     case Empty => Empty
-    case Cons(_, t) =>t()
+    case Cons(_, t) => t()
   }
 
   def toList: List[A] = {
@@ -129,19 +130,27 @@ sealed trait Stream[+A] {
     case Cons(h, t) => Some(h() -> t().takeViaUnfold(n - 1))
   }
 
-  def zipWith[B, C](bs: Stream[B])(combine: (A, B) => C): Stream[C] = {
-    unfold(this->bs){
-      case (Cons(ah, at), Cons(bh, bt)) => Some(combine(ah(), bh()) -> (at(), bt()))
-      case _ => None
-    }
-  }
-
-  def zipAll[B](bs: Stream[B]): Stream[(Option[A],Option[B])] = unfold(this->bs){
+  def zipAll[B](bs: Stream[B]): Stream[(Option[A], Option[B])] = unfold(this -> bs) {
     case (Empty, Empty) => None
-    case (l,r) =>
-      Some((l.headOption->r.headOption, l.tail->r.tail))
+    case (l, r) =>
+      Some((l.headOption -> r.headOption, l.tail -> r.tail))
   }
 
+  def zipWith[B, C](bs: Stream[B])(combine: (A, B) => C): Stream[C] =
+    zipAll(bs)
+      .map { case (xa, xb) =>
+        for {
+          a <- xa
+          b <- xb
+        } yield combine(a, b)
+      }
+      .flatMap {
+        case Some(x) => Stream(x)
+        case _ => Stream.empty
+      }
+
+  def zip[B](bs: Stream[B]): Stream[(A, B)] =
+    zipWith(bs)(_ -> _)
 
 }
 
@@ -177,6 +186,11 @@ object Stream {
     case Some((nextValue, nextStatus)) => cons(nextValue, unfold(nextStatus)(f))
     case None => empty
   }
+
+  def continuosly[A](generator: () => A): Stream[A] =
+    unfold(generator()) { s =>
+      Some(s, generator())
+    }
 
 
 }

@@ -1,10 +1,12 @@
 package com.filippodeluca.fp
 
-import java.util.concurrent.atomic.AtomicBoolean
+import scala.util.Random
 
 
 class StreamSpec extends UnitSpec {
 
+  val ones = Stream.constant(1)
+  val randomNumbers = Stream.continuosly(() => Random.nextInt())
 
   "Stream.toList" when {
     "the stream is empty" should {
@@ -231,11 +233,9 @@ class StreamSpec extends UnitSpec {
     "be composed" in {
       Stream(1, 2, 3, 4)
         .map { x =>
-          println(s"map: $x")
           x + 10
         }
-        .filter { x => x
-          println(s"filter: $x")
+        .filter { x =>
           x % 2 == 0
         }
     }
@@ -244,38 +244,23 @@ class StreamSpec extends UnitSpec {
   "Stream" should {
 
     "be lazy in map" in {
-
-      def ones: Stream[Int] = Stream.cons(1, ones)
-
       ones.map(_ + 1).take(5).toList shouldBe List(2,2,2,2,2)
     }
 
     "be lazy in exists" in {
-
-      def ones: Stream[Int] = Stream.cons(1, ones)
-
       ones.exists(_ == 1) shouldBe true
     }
 
     "be lazy in takeWhile" in {
-
-      def ones: Stream[Int] = Stream.cons(1, ones)
-
       ones.takeWhile(_ == 1).exists(_ == 1) shouldBe true
     }
 
     "be lazy in forall" in {
-
-      def ones: Stream[Int] = Stream.cons(1, ones)
-
       ones.forAll(_ != 1) shouldBe false
     }
 
-    "be lazy in filter" ignore { // it is lazy only on the false side
-
-      def ones: Stream[Int] = Stream.cons(1, ones)
-
-      ones.filter(_ != 1).take(5) shouldBe Stream.empty
+    "be lazy in filter" in {
+      randomNumbers.filter(_ < 10).take(100) should have size 100
     }
   }
 
