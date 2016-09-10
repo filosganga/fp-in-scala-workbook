@@ -1,7 +1,7 @@
 package com.filippodeluca.fp
 
 
-object Conditionals extends App {
+object Conditionals {
 
   implicit class RichBoolean(val l: Boolean) extends AnyVal {
 
@@ -11,7 +11,10 @@ object Conditionals extends App {
     def or(r: => Boolean): Boolean =
       if(l) true else r
 
-    def unary_not: Boolean = !l
   }
+
+  def not(rb: RichBoolean): Boolean = !rb.l
+
+  not(true and false) and not(false or true)
 
 }
