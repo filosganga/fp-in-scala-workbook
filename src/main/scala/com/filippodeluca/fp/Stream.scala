@@ -136,21 +136,17 @@ sealed trait Stream[+A] {
       Some((l.headOption -> r.headOption, l.tail -> r.tail))
   }
 
-  def zipWith[B, C](bs: Stream[B])(combine: (A, B) => C): Stream[C] =
-    zipAll(bs)
-      .map { case (xa, xb) =>
-        for {
-          a <- xa
-          b <- xb
-        } yield combine(a, b)
-      }
-      .flatMap {
-        case Some(x) => Stream(x)
-        case _ => Stream.empty
-      }
+  def zipWith[B, C](bs: Stream[B])(combine: (A, B) => C): Stream[C] = unfold(this -> bs) {
+    case (Cons(ah, at), Cons(bh, bt)) => Some(combine(ah(), bh()) ->(at(), bt()))
+    case _ => None
+  }
+
 
   def zip[B](bs: Stream[B]): Stream[(A, B)] =
     zipWith(bs)(_ -> _)
+
+  def startsWith[A1 >: A](s: Stream[A1]): Boolean =
+    zipWith(s)(_ == _).forAll(identity)
 
 }
 

@@ -229,6 +229,19 @@ class StreamSpec extends UnitSpec {
     }
   }
 
+  "Stream.startWith" when {
+    "one stream is the root of another stream" should {
+      "return true" in {
+        Stream(1,2,3,4,5).startsWith(Stream(1,2)) shouldBe true
+      }
+
+      "return true if the left stream is infinite" in {
+        Stream.from(1).startsWith(Stream(1,2)) shouldBe true
+      }
+    }
+
+  }
+
   "Stream function" should {
     "be composed" in {
       Stream(1, 2, 3, 4)
