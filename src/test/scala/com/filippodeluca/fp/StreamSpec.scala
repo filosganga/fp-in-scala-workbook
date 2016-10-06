@@ -358,4 +358,18 @@ class StreamSpec extends UnitSpec {
       }
     }
   }
+
+  "Stream.tails" when {
+    "the stream is empty" should {
+      "return a Stream with only Stream.empty" in {
+        Stream.empty[Nothing].tails.map(_.toList).toList shouldBe List(List.nil)
+      }
+    }
+
+    "the stream is not empty" should {
+      "return a Stream with all suffixes streams" in {
+        Stream(1,2,3).tails.map(_.toList).toList shouldBe List(List(1,2,3), List(2, 3), List(3), List.nil[Int])
+      }
+    }
+  }
 }

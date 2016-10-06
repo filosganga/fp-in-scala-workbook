@@ -22,6 +22,11 @@ object List {
     })
   }
 
+  def fill[A](n: Int)(a: A): List[A] = Stream.unfold(0){
+    case i if i < n => Some(a->(i+1))
+    case _ => None
+  }.toList
+
   def head[T](xs: List[T]): Option[T] = xs match {
     case Nil => None
     case Cons(h, _) => Some(h)

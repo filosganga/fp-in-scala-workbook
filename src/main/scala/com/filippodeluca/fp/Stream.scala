@@ -1,6 +1,7 @@
 package com.filippodeluca.fp
 
 import scala.annotation.tailrec
+import Option._
 
 sealed trait Stream[+A] {
 
@@ -147,6 +148,17 @@ sealed trait Stream[+A] {
 
   def startsWith[A1 >: A](s: Stream[A1]): Boolean =
     zipWith(s)(_ == _).forAll(identity)
+
+  def tails: Stream[Stream[A]] = unfold(some(this)) {
+    case Some(Stream.Empty) => Some((Stream.empty, none))
+    case Some(stream) => Some((stream, Some(stream.tail)))
+    case _ => None
+  }
+
+  def hasSubsequence[B](s: Stream[B]): Boolean =
+    tails exists (_ startsWith s)
+
+  def scanRight[T](z: => T)(f: (A, => T) => T): Stream[T] = ???
 
 }
 
