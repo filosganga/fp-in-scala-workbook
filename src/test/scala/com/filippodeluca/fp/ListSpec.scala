@@ -202,6 +202,33 @@ class ListSpec extends UnitSpec {
     }
   }
 
+  "splitWhere" when {
+    "the list is empty" should {
+      "return empty" in {
+        List.size(splitWhere(List.nil[Int])(_ == 3)) shouldBe 0
+      }
+    }
+
+    "the predicate always matches" should {
+      "return empty" in forAll() { xs: List[Int] =>
+        List.size(splitWhere(xs)(_ => true)) shouldBe 0
+      }
+    }
+
+    "the predicate never matches" should {
+      "return the original list in the first element" in forAll() { xs: List[Int] =>
+        List.head(splitWhere(xs)(_ => false)) shouldBe Some(xs)
+      }
+    }
+
+    "the predicate matches few elements" should {
+      "return the list of sublists" in {
+        splitWhere(List(1,2,0,1,2,3,0,0,1,2,3,4,0))(_ == 3) shouldBe List(List(1,2), List(1,2, 3), List(1,2,3,4))
+      }
+    }
+
+  }
+
   implicit def listArb[T](implicit arbT: Arbitrary[T]): Arbitrary[List[T]] =
     Arbitrary(listGen[T](arbT.arbitrary))
 

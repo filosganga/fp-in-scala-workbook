@@ -1,10 +1,10 @@
 package com.filippodeluca.fp
 
 import scala.annotation.tailrec
-import Option._
 
 sealed trait Stream[+A] {
 
+  import Option._
   import Stream._
 
   def head: A =

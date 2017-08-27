@@ -80,7 +80,7 @@ object List {
     case Cons(h, t) => prepend(prepend(xs, h), t)
   }
 
-  def size(xs: List[_]) = foldLeft(xs, 0) { (acc, x) =>
+  def size(xs: List[_]): Int = foldLeft(xs, 0) { (acc, x) =>
     acc + 1
   }
 
@@ -107,7 +107,7 @@ object List {
       foldLeft(xs, acc)(prepend(_, _))
     })
 
-  def increment[A](xs: List[A])(implicit n: Numeric[A]) =
+  def increment[A](xs: List[A])(implicit n: Numeric[A]): List[A] =
     map(xs){n.plus(_, n.one)}
 
   def map[A, B](xs: List[A])(f: A => B): List[B] =
@@ -141,12 +141,19 @@ object List {
   def hasSubsequence[A](xs: List[A], zs: List[A]): Boolean = {
 
     def loop(xs: List[A]): Boolean = xs match {
-      case Cons(h, tail) if zipWith(xs, zs)(_ == _) == map(zs)(_ => true) => true
-      case Cons(h, tail) => loop(tail)
+      case Cons(_, _) if zipWith(xs, zs)(_ == _) == map(zs)(_ => true) => true
+      case Cons(_, tail) => loop(tail)
       case Nil => false
     }
 
     loop(xs)
+  }
+
+  def splitWhere[A](xs: List[A])(predicate: A => Boolean): List[List[A]] = {
+    foldRight(xs, List.cons(List.nil[A], List.nil[List[A]])){
+      case (y, l) if predicate(y) => l
+      case (y, Cons(h, tail)) if !predicate(y) => prepend(tail, prepend(h, y))
+    }
   }
 
 }

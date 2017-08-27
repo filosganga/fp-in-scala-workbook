@@ -59,6 +59,6 @@ case class SimpleRng(seed: Long) extends Rng {
   override def nextInt: (Int, Rng) = {
     val nextSeed = (seed * 0x5DEECE66DL + 0xBL) & 0xFFFFFFFFFFFFL
     val n = (nextSeed >>> 16).toInt
-    n -> new SimpleRng(nextSeed)
+    n -> SimpleRng(nextSeed)
   }
 }
