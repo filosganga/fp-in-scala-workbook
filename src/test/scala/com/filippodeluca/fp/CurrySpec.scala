@@ -12,4 +12,12 @@ class CurrySpec extends UnitSpec with Curry {
     }
   }
 
+  "uncurry" should {
+    "return a uncurried function" in {
+      def add(x: Int, y: Int) = x + y
+
+
+      uncurry(curry(add))(5, 3) shouldBe 5 + 3
+    }
+  }
 }
