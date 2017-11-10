@@ -150,8 +150,9 @@ object List {
   }
 
   def splitWhere[A](xs: List[A])(predicate: A => Boolean): List[List[A]] = {
-    foldRight(xs, List.cons(List.nil[A], List.nil[List[A]])){
-      case (y, l) if predicate(y) => l
+    foldRight(xs, List.cons(List.nil[A], List.nil)){
+      case (y, l@Cons(Nil, _)) if predicate(y) => l
+      case (y, l) if predicate(y) => List.cons(List.nil, l)
       case (y, Cons(h, tail)) if !predicate(y) => prepend(tail, prepend(h, y))
     }
   }
